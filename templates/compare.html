@@ -1,0 +1,122 @@
+{% extends 'testlayout.html' %}
+{% block body %}
+{% include 'navbar.html' %}
+<style>
+    .btn-pk {
+    padding: 10px 20px;
+    font-size: 20px;
+    border-radius: 10px;
+    width:50%;   
+}
+</style>
+<div class="container">
+
+    <br>
+    <br>
+
+    <h3>Compare your team with your rivals</h3>
+    <p class="lead">
+    Check if your team is leading with your opponent in goals, wins and other aspects.
+    </p>
+    <hr>
+    <br>
+    <div class="card card-header  row">
+        <br>
+        <form class="col-md-12 " action= "http://localhost:5000/comp" method = "POST">
+          <div class="row">
+      <div class="form-group offset-md-1 col-md-4">
+            <label for="inputState">Choose your Team</label>
+            <select id="inputState" name = "TeamComp1" class="form-control">
+              <option value="Real Madrid" selected>Realmadrid</option>
+              <option value="Barcelona">Barcelona</option>
+                <option value="Atletico">Atletico de Madrid</option>
+              <option value="Sevilla">Sevilla FC</option>
+                <option value="Valencia">Valencia CF</option>
+              <option value="Athletic Club"> Athletic Club</option>
+                <option value="Real Betis">Real Betis</option>
+              <option value="Villarreal">Villareal FC</option>
+                <option value="Celta Vigo"> Celta Vigo</option>
+      
+            </select>
+          </div>
+      
+              <div class="form-group offset-md-2 col-md-4">
+            <label for="inputState">Choose your Opponent</label>
+            <select id="inputState"  name = "TeamComp2" class="form-control">
+              <option value="Real Madrid" >Realmadrid</option> 
+              <option value="Barcelona" selected>Barcelona</option>
+                <option value="Atletico">Atletico de Madrid</option>
+              <option value="Sevilla">Sevilla FC</option>
+                <option value="Valencia">Valencia CF</option>
+              <option value="Athletic Club"> Athletic Club</option>
+                <option value="Real Betis">Real Betis</option>
+              <option value="Villarreal">Villareal FC</option>
+                <option value="Celta Vigo"> Celta Vigo</option>
+      
+            </select>
+          </div>
+              </div>
+      
+    <br> <br>
+
+    <input  class="offset-sm-4 col-md-4 btn bt-lg btn-primary " type="submit" value="Compare">
+
+
+</form>
+        <br>
+    </div>
+    </div>
+
+<div class="container">
+    <div class="row">
+         <div class="col-sm-6 card" >
+
+                    <div class="card-body" >
+			<embed type="image/svg+xml" src={{graph_data|safe}} />
+	  </div>
+                </div>
+        <div class="col-sm-6 card" >
+
+                    <div class="card-body" >
+			<embed type="image/svg+xml" src={{graph_data1|safe}} />
+	  </div>
+                </div>
+
+    </div>
+    <div class="row">
+         <div class="col-sm-6 card" >
+
+                    <div class="card-body" >
+			<embed type="image/svg+xml" src={{graph_data2|safe}} />
+	  </div>
+                </div>
+
+        <div class="col-sm-6 card" >
+
+                    <div class="card-body" >
+			<embed type="image/svg+xml" src={{graph_data_goals|safe}} />
+	  </div>
+                </div>
+
+    </div>
+    <div class="row">
+        <div class="col-sm-6 card" >
+
+                    <div class="card-body" >
+			<embed type="image/svg+xml" src={{graph_data_homegoals|safe}} />
+	  </div>
+                </div>
+
+          <div class="col-sm-6 card" >
+
+                    <div class="card-body" >
+			<embed type="image/svg+xml" src={{possesion|safe}} />
+	  </div>
+                </div>
+    </div>
+</div> 
+
+<script src="/static/assets/bootstrap/js/bootstrap.min.js">
+</script>
+<script src="/static/assets/js/jquery.min.js" ></script>
+{%endblock%}

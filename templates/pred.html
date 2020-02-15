@@ -1,0 +1,69 @@
+{% extends 'testlayout.html' %}
+{% block body %}
+{% include 'navbar.html' %}
+<title>Predictions</title>
+<style>
+    .btn-pk {
+    padding: 10px 20px;
+    font-size: 20px;
+    border-radius: 10px;
+    width:50%;   
+}
+</style>
+<div class="container">
+    <br>
+    <br>
+    <h3>Match Prediction</h3>
+            <p class="lead">
+            Let's see which team has a better ratio to win the match.
+            </p>
+            <hr>
+    <br>
+    <div class="card card-header  row">
+        <br>
+<form class="col-md-12 " action= "http://localhost:5000/prediction_games" name = "form1" method = "POST" >
+    <div class="row">
+<div class="form-group offset-md-1 col-md-4" >
+      <label for="inputState">Select Home Team</label>
+      <select id="inputState" name = "TeamComp1" class="form-control">
+        {% for o in data %}
+              <option value="{{ o}}">{{ o }}</option>
+              {% endfor %}
+      </select>
+    </div>
+      <div class="form-group offset-md-2 col-md-4">
+      <label for="inputState">Select Away Team</label>
+      <select id="inputState"  name = "TeamComp2" class="form-control">
+        {% for o in data %}
+              <option value="{{ o}}">{{ o }}</option>
+              {% endfor %}
+      </select>
+    </div>
+        </div>
+    <br> <br>
+    <input  class="offset-sm-4 col-md-4 btn bt-lg btn-primary " id='b' type="submit"  value="Predict" >
+        <h5 align="center" style="color:red;"> {{data2}}</h5><br>     
+    </div>
+</form>
+        <br>
+    </div>
+    </div>
+   
+    <script> 
+        function GEEKFORGEEKS()                                    
+        { 
+            var name1 = document.forms["form1"]["TeamComp1"];               
+            var name2 = document.forms["form1"]["TeamComp2"];               
+            if(name1==name2)
+            {
+               alert("Please enter 2 different teams ");
+            }
+        }
+        </script>
+<script src="/static/assets/bootstrap/js/bootstrap.min.js">
+</script>
+<script src="/static/assets/js/jquery.min.js" ></script>
+
+
+
+{%endblock%}

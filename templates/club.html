@@ -1,0 +1,164 @@
+{% extends 'testlayout.html' %}
+{% block body %}
+{% include 'navbar.html' %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Laliga Clubs</title>
+    <link rel="stylesheet" href="/static/assets/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/assets/bootstrap/css/bootstrap-grid.min.css">
+    <link rel="stylesheet" href="/static/assets/bootstrap/css/bootstrap-reboot.min.css">
+        <link href="https://fonts.googleapis.com/css?family=Roboto+Slab" rel="stylesheet">
+
+                <style>
+                  body{
+                    font-family: 'Roboto Slab', serif;
+
+                  }
+                  .card-img-bottom {
+                            width: 100%;
+                             height: 19vw;
+                            object-fit: cover;
+                                }
+
+                </style>
+</head>
+<body>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                        <div class="card-header bg-dark">
+                          <h4 class=" text-center" style="color: white;">Laliga Teams</h4>
+                        </div>
+                    <br>
+
+                </div>
+            </div>
+
+                <h4>Welcome | Bienvenido | Bienvenue   </h4>
+            <p>Check out the Statistics and Analysis of your team through graphs and compare it with your rivals. You can also check out the tweets by your team.</p>
+
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="card" style="height: 20rem;">
+                        <div class="card-header  bg-primary">
+                            <h3 class="text-center" style="color: white;">FC Barcelona</h3>
+                        </div>
+                        <a href="{{url_for('barcapage')}}">   <img class="card-img-bottom img-fluid" src="static\assets\img\barcateam.jpg" alt="FC Barcelona Image"> </a>
+                    </div>
+                </div>
+                <div class="col-md-4 col-sm-6 " >
+                    <div class="card" style="height: 20rem;">
+                        <div class="card-header bg-primary" >
+                            <h3 class="text-center" style="color: white;">Real Madrid</h3>
+                        </div>
+                        <a href="{{url_for('madridpage')}}">  <img class="card-img-bottom img-fluid" src="static\assets\img\madridteam.jpg" alt="Real Madrid Image"> </a>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card" style="height: 20rem;">
+                        <div class="card-header bg-primary">
+                            <h3 class="text-center" style="color: white;">Atletico Madrid</h3>
+                        </div>
+                        <a href="{{url_for('atletico')}}">        <img class="card-img-bottom img-fluid" src="static\assets\img\atleticoteam.jpg" alt="Atletico Madrid Image"> </a>
+                    </div>
+                </div>
+            </div>
+            <br> <br>
+            <div class="row">
+                <div class="col-md-4">
+                        <div class="card" style="height: 20rem;">
+                            <div class="card-header bg-primary">
+                                <h3 class="text-center" style="color: white;">Sevilla FC</h3>
+                            </div>
+                            <a href="{{url_for('sevilla')}}">          <img class="img-fluid card-img-bottom" src="static\assets\img\sevillateam.png" alt="Sevilla FC Image"> </a>
+
+                        </div>
+                </div>
+
+                 <div class="col-md-4">
+                        <div class="card" style="height: 20rem;">
+                            <div class="card-header bg-primary">
+                                <h3 class="text-center" style="color: white;">Valencia CF</h3>
+                            </div>
+                            <a href="{{url_for('valencia')}}">     <img class="img-fluid card-img-bottom" src="static\assets\img\valenciateam.jpg" alt="Valencia Team Image"> </a>
+
+                        </div>
+                </div>
+
+                 <div class="col-md-4">
+                        <div class="card" style="height: 20rem;">
+                            <div class="card-header bg-primary">
+                                <h3 class="text-center" style="color: white;">Athletic Club FC</h3>
+                            </div>
+                            <a href="{{url_for('athletic')}}">   <img class="img-fluid card-img-bottom" src="static\assets\img\athleticbilbao.jpg" alt="Athletic Bilbao Image"> </a>
+
+                        </div>
+                </div>
+            </div>
+            <br> <br>
+            <div class="row">
+                <div class="col-md-4">
+                        <div class="card" style="height: 20rem;">
+                            <div class="card-header bg-primary">
+                                <h3 class="text-center" style="color: white;">Villareal </h3>
+                            </div>
+                            <a href="{{url_for('villareal')}}">  <img class="img-fluid card-img-bottom" src="static\assets\img\villareal.jpg" alt="Villareal Image"> </a>
+
+                        </div>
+                </div>
+
+                 <div class="col-md-4">
+                        <div class="card" style="height: 20rem;">
+                            <div class="card-header bg-primary">
+                                <h3 class="text-center" style="color: white;">Real Betis</h3>
+                            </div>
+                           <a href="{{url_for('betis')}}">  <img class="img-fluid card-img-bottom" src="static\assets\img\realbetis.jpg" alt="Real Betis Image"> </a>
+
+                        </div>
+                </div>
+
+                 <div class="col-md-4">
+                        <div class="card" style="height: 20rem;">
+                            <div class="card-header bg-primary">
+                                <h3 class="text-center" style="color: white;">Getafe FC</h3>
+                            </div>
+                            <a href="{{url_for('getafe')}}">   <img class="img-fluid card-img-bottom" src="static\assets\img\getafe.jpg" alt="Getafe Image"> </a>
+
+                        </div>
+                </div>
+            </div>
+        </div>
+        <br><br>
+        
+        <div class="container">
+            <div class="row">
+            <div class="offset-md-1 col-md-5">
+                    {%for i in range(aL|length)%}
+                    <div class="jumbotron">
+                        <h5>{{dL[i]}}</h5>
+                           <a href="{{uL[i]}}"> <img class="rounded img-fluid" src={{iL[i]}}> </a> 
+                              <p>
+                                  Powered by: @sportbible
+                              </p>
+                          </div>
+            {% endfor %}
+        </div>
+        <div class="col-md-5">
+                {%for m in range(aL|length)%}
+                <div class="jumbotron">
+                    <h5>{{dL1[m]}}</h5>
+                       <a href="{{uL1[m]}}"> <img class="rounded img-fluid" src={{iL1[m]}}> </a> 
+                          <p>
+                              Powered by: @espn
+                          </p>
+                      </div>
+        {% endfor %}
+    </div>
+        </div>
+    </div>
+    <script src="/static/assets/bootstrap/js/bootstrap.min.js">
+    </script>
+    <script src="/static/assets/js/jquery.min.js" ></script>
+    {%endblock%}

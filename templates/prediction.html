@@ -1,0 +1,80 @@
+<title>Prediction - Check your teams Prediction</title>
+<!-- gitcolne26 -->
+{% extends 'navbar.html' %}
+{% block body %}
+
+{% include 'navbar.html' %}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-8">
+            
+            <br>
+            <br>
+        
+            <h3>Match Prediction</h3>
+            <p class="lead">
+            Let's see which team has a better ratio to win the match.
+            </p>
+            <hr>
+            <br>
+            <div class="card card-header  row">
+                <br>
+        <form action= "http://localhost:5000/haramiprediction" method = "POST">
+            <div class="row">
+        <div class="form-group offset-md-1 col-md-4">
+              <label for="inputState">Choose your Team</label>
+              <select id="inputState" name = "TeamComp1" class="form-control">
+                <option selected>Realmadrid</option>
+                <option>Barcelona</option>
+                  <option >Atletico de Madrid</option>
+                <option>Sevilla FC</option>
+                  <option >Valencia CF</option>
+                <option>Athletic Club</option>
+                  <option >Real Betis</option>
+                <option>Villareal FC</option>
+                  <option>Getafe CF</option>
+        
+              </select>
+            </div>
+        
+                <div class="form-group offset-md-2 col-md-4">
+              <label for="inputState">Choose your Opponent</label>
+              <select id="inputState" name = "TeamComp2" class="form-control">
+                <option >Realmadrid</option>
+                <option selected>FC Barcelona</option>
+                  <option >Atletico de Madrid</option>
+                <option>Sevilla FC</option>
+                  <option >Valencia CF</option>
+                <option>Athletic Club</option>
+                  <option >Real Betis</option>
+                <option>Villareal FC</option>
+                  <option>Getafe CF</option>
+        
+              </select>
+            </div>
+                </div>
+            <br> 
+        
+            <input  class="offset-sm-4 col-md-4 btn bt-lg btn-primary " type="submit" value="Predict">
+        
+        
+        </form>
+                
+            </div>
+        </div>
+        <div  class="col-md-4">
+            <br>
+            <br>
+            
+            <div class="card">
+            <a class="twitter-timeline" data-lang="en" data-width="450" data-height="380" data-link-color="#19CF86" href="https://twitter.com/FreeBetTips?ref_src=twsrc%5Etfw">Tweets by FreeBetTips</a> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+        </div>
+        </div>
+    </div>
+</div>
+
+<script src="/static/assets/bootstrap/js/bootstrap.min.js">
+</script>
+<script src="/static/assets/js/jquery.min.js" ></script>
+{%endblock%}

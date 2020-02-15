@@ -1,0 +1,47 @@
+{% extends 'testlayout.html' %}
+{% block body %}
+{% include 'navbar.html' %}
+
+<br><br>
+<div class="container">
+    
+     <div class="row">
+       
+       <div class="offset-md-1 col-md-10">
+         <div class="card  text-center">
+       <div class="card-header bg-light text-center">
+       <h4>  Elo Ranking Graph </h4>
+       
+          <div class="card-body" >
+            <embed type="image/svg+xml" src={{data1|safe}} />
+          </div>
+          </div>
+        </div>
+      </div>
+     </div>
+     <br>
+     <hr>
+     <br>
+     <div class="row">
+       
+        <div class="offset-md-1 col-md-10">
+          <div class="card  text-center">
+        <div class="card-header bg-light text-center">
+        <h4>  Ranking Through Dataset </h4>
+        
+           <div class="card-body" >
+             <embed type="image/svg+xml" src={{data2|safe}} />
+           </div>
+           </div>
+         </div>
+       </div>
+      </div>
+</div>
+
+<script src="/static/assets/bootstrap/js/bootstrap.min.js">
+</script>
+<script src="/static/assets/js/jquery.min.js" ></script>
+
+
+
+{%endblock%}
