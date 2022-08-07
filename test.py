@@ -307,7 +307,7 @@ def result():
             al = al + 1
         elif (row['visitor_team_won'] == 1):
             aw = aw + 1
-        elif (row['draw' == 1]):
+        elif (row['draw'] == 1):
             ad = ad + 1
     print('Total no of away games are', at)
     print('Total no of away wins are', aw)
@@ -517,7 +517,7 @@ def barcapage():
             al = al + 1
         elif (row['visitor_team_won'] == 1):
             aw = aw + 1
-        elif (row['draw' == 1]):
+        elif (row['draw'] == 1):
             ad = ad + 1
     print('Total no of away games are', at)
     print('Total no of away wins are', aw)
@@ -695,7 +695,7 @@ def madridpage():
             al = al + 1
         elif (row['visitor_team_won'] == 1):
             aw = aw + 1
-        elif (row['draw' == 1]):
+        elif (row['draw'] == 1):
             ad = ad + 1
     print('Total no of away games are', at)
     print('Total no of away wins are', aw)
@@ -873,7 +873,7 @@ def atletico():
             al = al + 1
         elif (row['visitor_team_won'] == 1):
             aw = aw + 1
-        elif (row['draw' == 1]):
+        elif (row['draw'] == 1):
             ad = ad + 1
     print('Total no of away games are', at)
     print('Total no of away wins are', aw)
@@ -1007,6 +1007,7 @@ def atletico():
                               100 - (homePossession / count))
     # graph_data_6 =plotting_2('Total goals Scored and concede ','Total Goals Scored','Total Goals Concede',totalGoals,totalConcede)
 
+
     graph_data_7 = plotting_2('Total Possession ', 'Home Possesion', 'Away Possession',
                               (homePossession + awayPossession) / (count * 2),
                               100 - ((homePossession + awayPossession) / (count * 2)))
@@ -1062,7 +1063,7 @@ def sevilla():
             al = al + 1
         elif (row['visitor_team_won'] == 1):
             aw = aw + 1
-        elif (row['draw' == 1]):
+        elif (row['draw'] == 1):
             ad = ad + 1
     print('Total no of away games are', at)
     print('Total no of away wins are', aw)
@@ -1254,7 +1255,7 @@ def valencia():
             al = al + 1
         elif (row['visitor_team_won'] == 1):
             aw = aw + 1
-        elif (row['draw' == 1]):
+        elif (row['draw'] == 1):
             ad = ad + 1
     print('Total no of away games are', at)
     print('Total no of away wins are', aw)
@@ -1446,7 +1447,7 @@ def betis():
             al = al + 1
         elif (row['visitor_team_won'] == 1):
             aw = aw + 1
-        elif (row['draw' == 1]):
+        elif (row['draw'] == 1):
             ad = ad + 1
     print('Total no of away games are', at)
     print('Total no of away wins are', aw)
@@ -1638,7 +1639,7 @@ def athletic():
             al = al + 1
         elif (row['visitor_team_won'] == 1):
             aw = aw + 1
-        elif (row['draw' == 1]):
+        elif (row['draw'] == 1):
             ad = ad + 1
     print('Total no of away games are', at)
     print('Total no of away wins are', aw)
@@ -1828,7 +1829,7 @@ def villareal():
             al = al + 1
         elif (row['visitor_team_won'] == 1):
             aw = aw + 1
-        elif (row['draw' == 1]):
+        elif (row['draw'] == 1):
             ad = ad + 1
     print('Total no of away games are', at)
     print('Total no of away wins are', aw)
@@ -2020,7 +2021,7 @@ def getafe():
             al = al + 1
         elif (row['visitor_team_won'] == 1):
             aw = aw + 1
-        elif (row['draw' == 1]):
+        elif (row['draw'] == 1):
             ad = ad + 1
     print('Total no of away games are', at)
     print('Total no of away wins are', aw)
