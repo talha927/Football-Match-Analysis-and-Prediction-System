@@ -1,55 +1,59 @@
 from flask import Flask, render_template, request
-from flask_wtf import FlaskForm
 import pandas as pd
-from wtforms import SelectField, StringField
 import pickle
 from jsonC import convert_json_format, convert_json_format1
-testTable=pd.read_csv('testtable.csv')
+
+testTable = pd.read_csv('testtable.csv')
 import somefunc as sf
 import json
-#import ranking as rk 
-#from ranking import teamranking
-#from predictionMatch import pred as pm
+# import ranking as rk
+# from ranking import teamranking
+# from predictionMatch import pred as pm
 from graph import *
 import requests
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'OurSecretkey'
 
+
 @app.route('/football_news', methods=['POST', 'GET'])
 def football_news():
     url = ('https://newsapi.org/v2/top-headlines?sources=the-sport-bible&apiKey=734b2ba2bec54cfb984dae3b5de43db1')
     response = requests.get(url)
-    aa =  response.json()
+    aa = response.json()
 
     url1 = ('https://newsapi.org/v2/top-headlines?sources=football-italia&apiKey=734b2ba2bec54cfb984dae3b5de43db1')
     response1 = requests.get(url1)
-    aa1 =  response1.json()
+    aa1 = response1.json()
 
-    aL,tL,dL,cL,iL,uL=convert_json_format(aa)
-    aL1,tL1,dL1,cL1,iL1,uL1=convert_json_format1(aa1)
-    return render_template('news.html' , aL=aL,tL=tL,dL=dL,cL=cL,iL=iL,uL=uL, aL1=aL1,tL1=tL1,dL1=dL1,cL1=cL1,iL1=iL1,uL1=uL1)
-@app.route('/team_ranking' , methods=['GET', 'POST'])
+    aL, tL, dL, cL, iL, uL = convert_json_format(aa)
+    aL1, tL1, dL1, cL1, iL1, uL1 = convert_json_format1(aa1)
+    return render_template('news.html', aL=aL, tL=tL, dL=dL, cL=cL, iL=iL, uL=uL, aL1=aL1, tL1=tL1, dL1=dL1, cL1=cL1,
+                           iL1=iL1, uL1=uL1)
+
+
+@app.route('/team_ranking', methods=['GET', 'POST'])
 def team_ranking():
     df = pd.read_csv('Elo_Ranking_Final.csv')
     table_club = df['club']
     table_rating = df['ratings']
     dfown = pd.read_csv('OurOwnRanking.csv')
-    data1=bar_chart_1(df)
-    data2=bar_chart_2(dfown)
+    data1 = bar_chart_1(df)
+    data2 = bar_chart_2(dfown)
 
-    return render_template('rank.html', data1=data1,data2=data2 , table_club = table_club, table_rating = table_rating )
+    return render_template('rank.html', data1=data1, data2=data2, table_club=table_club, table_rating=table_rating)
+
 
 @app.route('/prediction_of_match', methods=['GET'])
 def prediction_of_match():
-    x=sf.laliga_teams2()
+    x = sf.laliga_teams2()
     return render_template('pred.html', data=x)
 
 
-@app.route('/prediction_games', methods=['POST' , 'GET'])
+@app.route('/prediction_games', methods=['POST', 'GET'])
 def prediction_games():
-    x=sf.laliga_teams2()
-    x1=sf.laliga_teams22()
+    x = sf.laliga_teams2()
+    x1 = sf.laliga_teams22()
     team1 = ""
     team2 = ""
     if request.method == 'POST':
@@ -58,76 +62,91 @@ def prediction_games():
         team2 = result['TeamComp2']
         team1 = str(team1)
         team2 = str(team2)
-        #print(team1)
-        #print(team2)
-    errMessage=""
-    if(team1==team2):
-          errMessage='Two teams cannot be same '
-          return render_template('pred.html', data=x, data2= errMessage)
+        print(f"\nTeam from are {team1} amd {team2}")
+        # print(team1)
+        # print(team2)
+    errMessage = ""
+    if (team1 == team2):
+        errMessage = 'Two teams cannot be same '
+        return render_template('pred.html', data=x, data2=errMessage)
     else:
 
-        df=pd.read_csv('Predfeature.csv')
-        df=df.drop(['Unnamed: 0'],axis=1)
-        with open('mcompletetraining.pkl' , 'rb') as f:
+        df = pd.read_csv('Predfeature.csv')
+        df = df.drop(['Unnamed: 0'], axis=1)
+        with open('mcompletetraining.pkl', 'rb') as f:
             mp = pickle.load(f)
             a = mp.predict(df)
-        test_table=testTable
+        test_table = pd.read_csv('testtable.csv')
         test_table.head()
-        test_table=test_table.drop(['Unnamed: 0'],axis=1)
-        this_week = test_table[['HomeTeam','AwayTeam']].loc[1890:]
-        this_week['Result_ADB']=a
-        #print(this_week.head(5))
-        this_week["Result_ADB"] = this_week.apply(lambda row: transformResultBack(row,"Result_ADB"),axis=1)
-    
+        print(f"\nTest table . head = {test_table.head()}")
+        test_table = test_table.drop(['Unnamed: 0'], axis=1)
+        this_week = test_table[['HomeTeam', 'AwayTeam']].loc[1890:]
+        this_week['Result_ADB'] = a
+        # print(this_week.head(5))
+        this_week["Result_ADB"] = this_week.apply(lambda row: transformResultBack(row, "Result_ADB"), axis=1)
 
-        ElClassico=this_week
-        Home_team=team1
-        Away_team=team2
-    #print(Home_team)
+        ElClassico = this_week
+        Home_team = team1
+        Away_team = team2
+        # print(Home_team)
 
-        Barcelona = ElClassico[((ElClassico.HomeTeam == Home_team) & (ElClassico.AwayTeam == Away_team))]
-        strin=Barcelona.HomeTeam.unique()
-        strin2=Barcelona.AwayTeam.unique()
-        strin3=Barcelona.Result_ADB.unique()
-        t1=strin[0]
-        t2=strin2[0]
-        t3=strin3[0]
-        if(strin3=='HomeTeamWins'):
-            po=t1
-        elif(strin3=='AwayTeamWins'):
-            po=t2
+        Barcelona = ElClassico[((ElClassico.HomeTeam == str(Home_team)) & (ElClassico.AwayTeam == str(Away_team)))]
+        if Barcelona.empty:
+            result = "HomeTeamWins"  # Result
+            are = [Home_team, result]
+
         else:
-            po='Draw'
-    #winningTeam=str(winningTeam)
-    #winningTeam=winningTeam[7]
-        are=[po,t3]
-    #sti=str(Barcelona['HomeTeam'])
-        print(are)
-        x1=x1[x1['HomeTeam']==team1]
-        x1=x1[x1['AwayTeam']==team2]
-        graph_data_1 = plotting_pred('Winning Chances Percentage', team1, team2 , 'Draw', x1.HomeWinningProb*100, x1.AwayWinningProb*100, x1.DrawProb*100)
+            print(f"\nBarcelona result overall = {Barcelona}")
+            strin = Barcelona.HomeTeam.unique()
+            strin2 = Barcelona.AwayTeam.unique()
+            strin3 = Barcelona.Result_ADB.unique()
+            print(f"\nStrings are {strin}-----{strin2}-----{strin3}")
+            home_team = strin[0] # Home Team
+            away_team = strin2[0] # Away team
+            result = strin3[0] # Result
+            if (strin3 == 'HomeTeamWins'):
+                match_result = home_team
+            elif (strin3 == 'AwayTeamWins'):
+                match_result = away_team
+            else:
+                match_result = 'Draw'
+            are = [match_result, result]
 
-        return render_template('predic.html', data=x, data1= are,graph_data_1 =graph_data_1)
+        # sti=str(Barcelona['HomeTeam'])
+        print(are)
+        x1 = x1[x1['HomeTeam'] == team1]
+        x1 = x1[x1['AwayTeam'] == team2]
+        graph_data_1 = plotting_pred('Winning Chances Percentage', team1, team2, 'Draw', x1.HomeWinningProb * 100,
+                                     x1.AwayWinningProb * 100, x1.DrawProb * 100)
+
+        return render_template('predic.html', data=x, data1=are, graph_data_1=graph_data_1)
+
 
 @app.route('/compareteams', methods=['GET'])
 def compareteams():
     return render_template('aaa.html')
-    #return render_template('pred.html')
-@app.route('/predmatch' , methods=['GET'])
+    # return render_template('pred.html')
+
+
+@app.route('/predmatch', methods=['GET'])
 def predmatch():
-    df=pm.pred()
+    df = pm.pred()
     print(df)
     return render_template('student.html')
 
+
 @app.route('/head', methods=['GET'])
 def head():
-    x=sf.laliga_teams()
-    return render_template('head.html', data = x)
+    x = sf.laliga_teams()
+    return render_template('head.html', data=x)
+
 
 '''@app.route('/head', methods=['GET'])
 def compareteams22():
     return render_template('aaa.html')
 '''
+
+
 @app.route('/comp', methods=['POST', 'GET'])
 def comp1():
     team1 = ""
@@ -142,7 +161,9 @@ def comp1():
         print(team2)
         laliga = pd.read_csv('FootballEurope.csv')
 
-    laliga['winner'] = laliga.apply(lambda row: 1 if row['homeGoalFT'] > row['awayGoalFT'] else 2 if row['homeGoalFT'] < row['awayGoalFT'] else 0,axis=1)
+    laliga['winner'] = laliga.apply(
+        lambda row: 1 if row['homeGoalFT'] > row['awayGoalFT'] else 2 if row['homeGoalFT'] < row['awayGoalFT'] else 0,
+        axis=1)
     laliga = laliga[laliga.division == 'La_Liga']
     laliga['local_team_won'] = laliga.apply(lambda row: 1 if row['homeGoalFT'] > row['awayGoalFT'] else 0, axis=1)
     laliga['visitor_team_won'] = laliga.apply(lambda row: 1 if row['homeGoalFT'] < row['awayGoalFT'] else 0, axis=1)
@@ -167,9 +188,9 @@ def comp1():
     madridawaygoals = MadridAway['awayGoalFT'].sum()
 
     barcaPossesion = (BarcaAway['homePossessionFT'].sum() / (len(laliga) * 100)) + (
-                BarcaAway['awayPossessionFT'].sum() / (len(laliga) * 100))
+            BarcaAway['awayPossessionFT'].sum() / (len(laliga) * 100))
     madridpossesion = (MadridHome['homePossessionFT'].sum() / (len(laliga) * 100)) + (
-                MadridAway['awayPossessionFT'].sum() / (len(laliga) * 100))
+            MadridAway['awayPossessionFT'].sum() / (len(laliga) * 100))
 
     # MadridWins=MadridHome['local_team_won'].sum() + MadridAway['visitor_team_won'].sum()
     BarcaDraws = Barcelona['draw'].sum()
@@ -194,7 +215,7 @@ def comp1():
 
 @app.route('/thehead', methods=['POST', 'GET'])
 def thehead():
-    x=sf.laliga_teams()
+    x = sf.laliga_teams()
     team1 = ""
     teams2 = ""
     if request.method == 'POST':
@@ -206,7 +227,6 @@ def thehead():
         print(team1)
         print(team2)
         laliga = pd.read_csv('FootballEurope.csv')
-
 
     laliga['winner'] = laliga.apply(
         lambda row: 1 if row['homeGoalFT'] > row['awayGoalFT'] else 2 if row['homeGoalFT'] < row['awayGoalFT'] else 0,
@@ -235,9 +255,9 @@ def thehead():
     madridawaygoals = MadridAway['awayGoalFT'].sum()
 
     barcaPossesion = (BarcaAway['homePossessionFT'].sum() / len(laliga) * 100) + (
-                BarcaAway['awayPossessionFT'].sum() / len(laliga) * 100)
+            BarcaAway['awayPossessionFT'].sum() / len(laliga) * 100)
     madridpossesion = (MadridHome['homePossessionFT'].sum() / len(laliga) * 100) + (
-                MadridAway['awayPossessionFT'].sum() / len(laliga) * 100)
+            MadridAway['awayPossessionFT'].sum() / len(laliga) * 100)
 
     # MadridWins=MadridHome['local_team_won'].sum() + MadridAway['visitor_team_won'].sum()
     BarcaDraws = Barcelona['draw'].sum()
@@ -255,7 +275,8 @@ def thehead():
     graph_data_homegoals = plotting3('Number of Home Goals', team1, team2, barcahomeGoals, madridhomeGoals)
     possesion = goals('Possesion in Percentage %', team1, team2, barcaPossesion, madridpossesion)
 
-    return render_template('headtoheadmain.html', graph_data=graph_data, graph_data1=graph_data1, graph_data2=graph_data2,
+    return render_template('headtoheadmain.html', graph_data=graph_data, graph_data1=graph_data1,
+                           graph_data2=graph_data2,
                            graph_data_goals=graph_data_goals, graph_data_homegoals=graph_data_homegoals,
                            possesion=possesion, data=x)
 
@@ -460,11 +481,13 @@ def result():
 def index():
     return render_template('checkfile.html')
 
-@app.route('/prediction' , methods=['GET'])
+
+@app.route('/prediction', methods=['GET'])
 def prediction():
     return render_template('prediction.html')
 
-@app.route('/this' , methods=['GET'])
+
+@app.route('/this', methods=['GET'])
 def thisnavbar():
     return render_template('testnav.html')
 
@@ -473,9 +496,12 @@ def thisnavbar():
 def admin():
     return render_template('admin.html')
 """
+
+
 @app.route('/navbar', methods=['GET'])
 def navbar():
     return render_template('navbar.html')
+
 
 @app.route('/barcapage', methods=['GET'])
 def barcapage():
@@ -637,23 +663,34 @@ def barcapage():
     print('Away offsides in home venue ', awayOffsides)
     print('Home offsides in away venue ', AawayOffsides)
     print('Away offsides in away venue ', AhomeOffsides)
-    graph_data =plotting('Result on Home Venue', 'Home Team', 'Away Team', 'Draws', cp, cp1, cp2)
-    graph_data_1=plotting('Result on Away Venue','Home Team','Away Team','Draws',aw,al,ad)
-    graph_data_2=plotting('Matches won','Home Team','Away Team','Draws',cp+aw,cp1+al,cp2+ad)
-    #graph_data_3 = plotting('Matches won', 'Home Team', 'Away Team', 'Draws', cp + aw, cp1 + al, cp2 + ad)
-    graph_data_3 =plotting_2('Goals Scored and concede on Home venue','Home Goals','Away Goals',homegoalsScored,homegoalsconcede)
-    graph_data_4 =plotting_2('Goals Scored and concede on Away venue','Home Goals','Away Goals',awaygoalsScored,awaygoalsconcede)
-    graph_data_5 =plotting_2('Total goals Scored and concede ','Total Goals Scored','Total Goals Concede',totalGoals,totalConcede)
-    graph_data_6 = plotting_2('Possesion in home venue ', 'Home Possesion', 'Away Possession', homePossession / count, 100 - (homePossession / count))
+    graph_data = plotting('Result on Home Venue', 'Home Team', 'Away Team', 'Draws', cp, cp1, cp2)
+    graph_data_1 = plotting('Result on Away Venue', 'Home Team', 'Away Team', 'Draws', aw, al, ad)
+    graph_data_2 = plotting('Matches won', 'Home Team', 'Away Team', 'Draws', cp + aw, cp1 + al, cp2 + ad)
+    # graph_data_3 = plotting('Matches won', 'Home Team', 'Away Team', 'Draws', cp + aw, cp1 + al, cp2 + ad)
+    graph_data_3 = plotting_2('Goals Scored and concede on Home venue', 'Home Goals', 'Away Goals', homegoalsScored,
+                              homegoalsconcede)
+    graph_data_4 = plotting_2('Goals Scored and concede on Away venue', 'Home Goals', 'Away Goals', awaygoalsScored,
+                              awaygoalsconcede)
+    graph_data_5 = plotting_2('Total goals Scored and concede ', 'Total Goals Scored', 'Total Goals Concede',
+                              totalGoals, totalConcede)
+    graph_data_6 = plotting_2('Possesion in home venue ', 'Home Possesion', 'Away Possession', homePossession / count,
+                              100 - (homePossession / count))
     # graph_data_6 =plotting_2('Total goals Scored and concede ','Total Goals Scored','Total Goals Concede',totalGoals,totalConcede)
 
-    graph_data_7=plotting_2('Total Possession ','Home Possesion','Away Possession',(homePossession+awayPossession)/(count*2),100-((homePossession+awayPossession)/(count*2)))
-    graph_data_8 = plotting_2('Fouls in home venue ','Home Fouls','Away Fouls',homeFoulshome,awayFoulshome)
-    graph_data_9 = plotting_2('Fouls in away venue ','Home Fouls','Away Fouls',homeFoulsaway,awayFoulsaway)
-    graph_data_10 =plotting_2('Total Fouls ', 'Home Fouls', 'Away Fouls', totalFoulsHome, totalFoulsAway)
-    graph_data_11 =plotting_2('Offsides  in home venue ', 'homeOffsides', 'awayOffsides', homeOffsides, awayOffsides)
-    graph_data_12 =plotting_2('Offsides  in away venue ', 'homeOffsides', 'awayOffsides', AawayOffsides, AhomeOffsides)
-    return render_template("barca.html", graph_data=graph_data, graph_data_1=graph_data_1,graph_data_2=graph_data_2,graph_data_3=graph_data_3, graph_data_4=graph_data_4,graph_data_5=graph_data_5,graph_data_6=graph_data_6, graph_data_7=graph_data_7,graph_data_8=graph_data_8,graph_data_9=graph_data_9, graph_data_10=graph_data_10,graph_data_11=graph_data_11,graph_data_12=graph_data_12)
+    graph_data_7 = plotting_2('Total Possession ', 'Home Possesion', 'Away Possession',
+                              (homePossession + awayPossession) / (count * 2),
+                              100 - ((homePossession + awayPossession) / (count * 2)))
+    graph_data_8 = plotting_2('Fouls in home venue ', 'Home Fouls', 'Away Fouls', homeFoulshome, awayFoulshome)
+    graph_data_9 = plotting_2('Fouls in away venue ', 'Home Fouls', 'Away Fouls', homeFoulsaway, awayFoulsaway)
+    graph_data_10 = plotting_2('Total Fouls ', 'Home Fouls', 'Away Fouls', totalFoulsHome, totalFoulsAway)
+    graph_data_11 = plotting_2('Offsides  in home venue ', 'homeOffsides', 'awayOffsides', homeOffsides, awayOffsides)
+    graph_data_12 = plotting_2('Offsides  in away venue ', 'homeOffsides', 'awayOffsides', AawayOffsides, AhomeOffsides)
+    return render_template("barca.html", graph_data=graph_data, graph_data_1=graph_data_1, graph_data_2=graph_data_2,
+                           graph_data_3=graph_data_3, graph_data_4=graph_data_4, graph_data_5=graph_data_5,
+                           graph_data_6=graph_data_6, graph_data_7=graph_data_7, graph_data_8=graph_data_8,
+                           graph_data_9=graph_data_9, graph_data_10=graph_data_10, graph_data_11=graph_data_11,
+                           graph_data_12=graph_data_12)
+
 
 @app.route('/madridpage', methods=['GET'])
 def madridpage():
@@ -815,23 +852,36 @@ def madridpage():
     print('Away offsides in home venue ', awayOffsides)
     print('Home offsides in away venue ', AawayOffsides)
     print('Away offsides in away venue ', AhomeOffsides)
-    graph_data =plotting('Barcelona number of wins and looses on home ground', 'Barcelona', 'Barcelona opponent', 'Draws', cp, cp1, cp2)
-    graph_data_1=plotting('Barcelona number of wins and looses on away', 'Barcelona', 'Barcelona opponent', 'Draws',aw,al,ad)
-    graph_data_2=plotting('Matches won','Home Team','Away Team','Draws',cp+aw,cp1+al,cp2+ad)
-    #graph_data_3 = plotting('Matches won', 'Home Team', 'Away Team', 'Draws', cp + aw, cp1 + al, cp2 + ad)
-    graph_data_3 =plotting_2('Goals Scored and concede on Home venue','Home Goals','Away Goals',homegoalsScored,homegoalsconcede)
-    graph_data_4 =plotting_2('Goals Scored and concede on Away venue','Home Goals','Away Goals',awaygoalsScored,awaygoalsconcede)
-    graph_data_5 =plotting_2('Total goals Scored and concede ','Total Goals Scored','Total Goals Concede',totalGoals,totalConcede)
-    graph_data_6 = plotting_2('Possesion in home venue ', 'Home Possesion', 'Away Possession', homePossession / count, 100 - (homePossession / count))
+    graph_data = plotting('Barcelona number of wins and looses on home ground', 'Barcelona', 'Barcelona opponent',
+                          'Draws', cp, cp1, cp2)
+    graph_data_1 = plotting('Barcelona number of wins and looses on away', 'Barcelona', 'Barcelona opponent', 'Draws',
+                            aw, al, ad)
+    graph_data_2 = plotting('Matches won', 'Home Team', 'Away Team', 'Draws', cp + aw, cp1 + al, cp2 + ad)
+    # graph_data_3 = plotting('Matches won', 'Home Team', 'Away Team', 'Draws', cp + aw, cp1 + al, cp2 + ad)
+    graph_data_3 = plotting_2('Goals Scored and concede on Home venue', 'Home Goals', 'Away Goals', homegoalsScored,
+                              homegoalsconcede)
+    graph_data_4 = plotting_2('Goals Scored and concede on Away venue', 'Home Goals', 'Away Goals', awaygoalsScored,
+                              awaygoalsconcede)
+    graph_data_5 = plotting_2('Total goals Scored and concede ', 'Total Goals Scored', 'Total Goals Concede',
+                              totalGoals, totalConcede)
+    graph_data_6 = plotting_2('Possesion in home venue ', 'Home Possesion', 'Away Possession', homePossession / count,
+                              100 - (homePossession / count))
     # graph_data_6 =plotting_2('Total goals Scored and concede ','Total Goals Scored','Total Goals Concede',totalGoals,totalConcede)
 
-    graph_data_7=plotting_2('Total Possession ','Home Possesion','Away Possession',(homePossession+awayPossession)/(count*2),100-((homePossession+awayPossession)/(count*2)))
-    graph_data_8 =plotting_2('Fouls in home venue ','Home Fouls','Away Fouls',homeFoulshome,awayFoulshome)
-    graph_data_9 =plotting_2('Fouls in away venue ','Home Fouls','Away Fouls',homeFoulsaway,awayFoulsaway)
-    graph_data_10 =plotting_2('Total Fouls ', 'Home Fouls', 'Away Fouls', totalFoulsHome, totalFoulsAway)
-    graph_data_11 =plotting_2('Offsides  in home venue ', 'homeOffsides', 'awayOffsides', homeOffsides, awayOffsides)
-    graph_data_12 =plotting_2('Offsides  in away venue ', 'homeOffsides', 'awayOffsides', AawayOffsides, AhomeOffsides)
-    return render_template("realmadrid.html", graph_data=graph_data, graph_data_1=graph_data_1,graph_data_2=graph_data_2,graph_data_3=graph_data_3, graph_data_4=graph_data_4,graph_data_5=graph_data_5,graph_data_6=graph_data_6, graph_data_7=graph_data_7,graph_data_8=graph_data_8,graph_data_9=graph_data_9, graph_data_10=graph_data_10,graph_data_11=graph_data_11,graph_data_12=graph_data_12)
+    graph_data_7 = plotting_2('Total Possession ', 'Home Possesion', 'Away Possession',
+                              (homePossession + awayPossession) / (count * 2),
+                              100 - ((homePossession + awayPossession) / (count * 2)))
+    graph_data_8 = plotting_2('Fouls in home venue ', 'Home Fouls', 'Away Fouls', homeFoulshome, awayFoulshome)
+    graph_data_9 = plotting_2('Fouls in away venue ', 'Home Fouls', 'Away Fouls', homeFoulsaway, awayFoulsaway)
+    graph_data_10 = plotting_2('Total Fouls ', 'Home Fouls', 'Away Fouls', totalFoulsHome, totalFoulsAway)
+    graph_data_11 = plotting_2('Offsides  in home venue ', 'homeOffsides', 'awayOffsides', homeOffsides, awayOffsides)
+    graph_data_12 = plotting_2('Offsides  in away venue ', 'homeOffsides', 'awayOffsides', AawayOffsides, AhomeOffsides)
+    return render_template("realmadrid.html", graph_data=graph_data, graph_data_1=graph_data_1,
+                           graph_data_2=graph_data_2, graph_data_3=graph_data_3, graph_data_4=graph_data_4,
+                           graph_data_5=graph_data_5, graph_data_6=graph_data_6, graph_data_7=graph_data_7,
+                           graph_data_8=graph_data_8, graph_data_9=graph_data_9, graph_data_10=graph_data_10,
+                           graph_data_11=graph_data_11, graph_data_12=graph_data_12)
+
 
 @app.route('/atletico', methods=['GET'])
 def atletico():
@@ -993,7 +1043,8 @@ def atletico():
     print('Away offsides in home venue ', awayOffsides)
     print('Home offsides in away venue ', AawayOffsides)
     print('Away offsides in away venue ', AhomeOffsides)
-    graph_data = plotting('Real Madrid number of wins and looses', 'Barcelona', 'Barcelona opponent', 'Draws', cp, cp1, cp2)
+    graph_data = plotting('Real Madrid number of wins and looses', 'Barcelona', 'Barcelona opponent', 'Draws', cp, cp1,
+                          cp2)
     graph_data_1 = plotting('Result on Home Venue', 'Home Team', 'Away Team', 'Draws', aw, al, ad)
     graph_data_2 = plotting('Matches won', 'Home Team', 'Away Team', 'Draws', cp + aw, cp1 + al, cp2 + ad)
     # graph_data_3 = plotting('Matches won', 'Home Team', 'Away Team', 'Draws', cp + aw, cp1 + al, cp2 + ad)
@@ -1006,7 +1057,6 @@ def atletico():
     graph_data_6 = plotting_2('Possesion in home venue ', 'Home Possesion', 'Away Possession', homePossession / count,
                               100 - (homePossession / count))
     # graph_data_6 =plotting_2('Total goals Scored and concede ','Total Goals Scored','Total Goals Concede',totalGoals,totalConcede)
-
 
     graph_data_7 = plotting_2('Total Possession ', 'Home Possesion', 'Away Possession',
                               (homePossession + awayPossession) / (count * 2),
@@ -1021,6 +1071,7 @@ def atletico():
                            graph_data_5=graph_data_5, graph_data_6=graph_data_6, graph_data_7=graph_data_7,
                            graph_data_8=graph_data_8, graph_data_9=graph_data_9, graph_data_10=graph_data_10,
                            graph_data_11=graph_data_11, graph_data_12=graph_data_12)
+
 
 @app.route('/sevilla', methods=['GET'])
 def sevilla():
@@ -1183,7 +1234,8 @@ def sevilla():
     print('Away offsides in home venue ', awayOffsides)
     print('Home offsides in away venue ', AawayOffsides)
     print('Away offsides in away venue ', AhomeOffsides)
-    graph_data = plotting('Barcelona number of wins and looses', 'Barcelona', 'Barcelona opponent', 'Draws', cp, cp1, cp2)
+    graph_data = plotting('Barcelona number of wins and looses', 'Barcelona', 'Barcelona opponent', 'Draws', cp, cp1,
+                          cp2)
     graph_data_1 = plotting('Result on Away Venue', 'Home Team', 'Away Team', 'Draws', aw, al, ad)
     graph_data_2 = plotting('Matches won', 'Home Team', 'Away Team', 'Draws', cp + aw, cp1 + al, cp2 + ad)
     # graph_data_3 = plotting('Matches won', 'Home Team', 'Away Team', 'Draws', cp + aw, cp1 + al, cp2 + ad)
@@ -1214,7 +1266,8 @@ def sevilla():
                            graph_data_8=graph_data_8, graph_data_9=graph_data_9, graph_data_10=graph_data_10,
                            graph_data_11=graph_data_11, graph_data_12=graph_data_12)
 
-@app.route('/valencia' , methods=['GET'])
+
+@app.route('/valencia', methods=['GET'])
 def valencia():
     laliga = pd.read_csv('FootballEurope.csv')
     laliga['winner'] = laliga.apply(
@@ -1405,6 +1458,7 @@ def valencia():
                            graph_data_5=graph_data_5, graph_data_6=graph_data_6, graph_data_7=graph_data_7,
                            graph_data_8=graph_data_8, graph_data_9=graph_data_9, graph_data_10=graph_data_10,
                            graph_data_11=graph_data_11, graph_data_12=graph_data_12)
+
 
 @app.route('/betis', methods=['GET'])
 def betis():
@@ -1598,7 +1652,8 @@ def betis():
                            graph_data_8=graph_data_8, graph_data_9=graph_data_9, graph_data_10=graph_data_10,
                            graph_data_11=graph_data_11, graph_data_12=graph_data_12)
 
-@app.route('/athletic' , methods=['GET'])
+
+@app.route('/athletic', methods=['GET'])
 def athletic():
     laliga = pd.read_csv('FootballEurope.csv')
     laliga['winner'] = laliga.apply(
@@ -1788,7 +1843,8 @@ def athletic():
                            graph_data_8=graph_data_8, graph_data_9=graph_data_9, graph_data_10=graph_data_10,
                            graph_data_11=graph_data_11, graph_data_12=graph_data_12)
 
-@app.route('/villareal' , methods=['GET'])
+
+@app.route('/villareal', methods=['GET'])
 def villareal():
     laliga = pd.read_csv('FootballEurope.csv')
     laliga['winner'] = laliga.apply(
@@ -1980,7 +2036,8 @@ def villareal():
                            graph_data_8=graph_data_8, graph_data_9=graph_data_9, graph_data_10=graph_data_10,
                            graph_data_11=graph_data_11, graph_data_12=graph_data_12)
 
-@app.route('/getafe' , methods=['GET'])
+
+@app.route('/getafe', methods=['GET'])
 def getafe():
     laliga = pd.read_csv('FootballEurope.csv')
     laliga['winner'] = laliga.apply(
@@ -2170,9 +2227,13 @@ def getafe():
                            graph_data_5=graph_data_5, graph_data_6=graph_data_6, graph_data_7=graph_data_7,
                            graph_data_8=graph_data_8, graph_data_9=graph_data_9, graph_data_10=graph_data_10,
                            graph_data_11=graph_data_11, graph_data_12=graph_data_12)
+
+
 @app.route('/club', methods=['GET'])
 def club():
     return render_template('club.html')
+
+
 """
 @app.route('/compareteams', methods = ['GET'])
 def compareteams():
